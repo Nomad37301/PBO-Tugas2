@@ -4,19 +4,18 @@ import database.DB;
 import exception.ApiException;
 import exception.BadRequestException;
 import exception.NotFoundException;
-import model.RoomType;
-import model.Villa;
-import server.Request;
-import server.Response;
-import util.JsonUtil;
-import util.Validator;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import model.RoomType;
+import model.Villa;
+import server.Request;
+import server.Response;
+import util.JsonUtil;
+import util.Validator;
 
 
 public class VillaController {
@@ -219,35 +218,21 @@ public class VillaController {
         }
 
         try (Connection conn = DB.getConnection()) {
-            // Cek villa
-            PreparedStatement checkVilla = conn.prepareStatement("SELECT id FROM villas WHERE id = ?");
-            checkVilla.setInt(1, villaId);
-            ResultSet rs = checkVilla.executeQuery();
-            if (!rs.next()) throw new NotFoundException("Villa ID " + villaId + " not found");
-
             PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO room_types (villa, name, quantity, capacity, price, bed_size, " +
-                            "has_desk, has_ac, has_tv, has_wifi, has_shower, has_hotwater, has_fridge) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-
+                    "INSERT INTO room_types (villa, name, bed_size, price) VALUES (?, ?, ?, ?)");
             stmt.setInt(1, villaId);
             stmt.setString(2, room.name);
-            stmt.setInt(3, room.quantity);
-            stmt.setInt(4, room.capacity);
-            stmt.setInt(5, room.price);
-            stmt.setString(6, room.bed_size);
-            stmt.setInt(7, room.has_desk ? 1 : 0);
-            stmt.setInt(8, room.has_ac ? 1 : 0);
-            stmt.setInt(9, room.has_tv ? 1 : 0);
-            stmt.setInt(10, room.has_wifi ? 1 : 0);
-            stmt.setInt(11, room.has_shower ? 1 : 0);
-            stmt.setInt(12, room.has_hotwater ? 1 : 0);
-            stmt.setInt(13, room.has_fridge ? 1 : 0);
-
+            stmt.setString(3, room.bed_size);
+            stmt.setInt(4, room.price);
             stmt.executeUpdate();
 
-            ResultSet genKey = stmt.getGeneratedKeys();
-            if (genKey.next()) room.id = genKey.getInt(1);
+            // Ambil ID terakhir
+            Statement getIdStmt = conn.createStatement();
+            ResultSet rs = getIdStmt.executeQuery("SELECT last_insert_rowid()");
+            if (rs.next()) {
+                room.id = rs.getInt(1);
+            }
+
             room.villa = villaId;
 
             res.setStatus(201);
@@ -260,7 +245,7 @@ public class VillaController {
         }
     }
 
-    public static void updateRoom(Request req, Response res, int villaId, int roomId) {
+        public static void updateRoom(Request req, Response res, int villaId, int roomId) {
         RoomType room = JsonUtil.fromJson(req.getBody(), RoomType.class);
 
         if (room == null ||
