@@ -4,7 +4,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
-dpublic class Response {
+public class Response {
     private final OutputStream output;
     private final HashMap<String, String> headers = new HashMap<>();
     private int status = 200;
