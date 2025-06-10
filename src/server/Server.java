@@ -1,13 +1,12 @@
 package server;
 
 import app.Main;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-
 import controller.VillaController;
 import exception.ApiException;
 import exception.NotFoundException;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import util.JsonUtil;
 
 public class Server {
@@ -73,7 +72,7 @@ public class Server {
         String method = req.getMethod();
         String path = req.getPath();
 
-        // --- VILLA ROUTES ---
+        // --- rute villa ---
         if (method.equals("GET") && path.equals("/villas")) {
             VillaController.getAll(res);
         } else if (method.equals("GET") && path.matches("^/villas/\\d+$")) {
@@ -89,7 +88,7 @@ public class Server {
             VillaController.deleteVilla(res, id);
         }
 
-        // --- ROOM ROUTES ---
+        // --- rute roomtype ---
         else if (method.equals("GET") && path.matches("^/villas/\\d+/rooms$")) {
             int id = Integer.parseInt(path.split("/")[2]);
             VillaController.getRooms(res, id);
@@ -108,7 +107,7 @@ public class Server {
             VillaController.deleteRoom(res, villaId, roomId);
         }
 
-        // --- Unknown route ---
+        // --- rute Unknown  ---
         else {
             throw new NotFoundException("Endpoint not found: " + method + " " + path);
         }
