@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
-dpublic class Request {
+public class Request {
     private String method;
     private String path;
     private String body = "";
