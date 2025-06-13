@@ -5,8 +5,8 @@ public class Vouchers {
     public String code;
     public String description;
     public float discount;
-    public String start_date; // Tipe data sesuaikan nanti
-    public String end_date; // Tipe data sesuaikan nanti
+    public String start_date; // Tipe data sesuaikan nanti / tipe data belum final ato fiks mungkin di ubah mungkin tidak
+    public String end_date; // Tipe data sesuaikan nanti / sama
 
     public Vouchers() {}
 
