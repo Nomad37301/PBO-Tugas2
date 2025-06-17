@@ -2,6 +2,7 @@ package server;
 
 import app.Main;
 import controller.VillaController;
+import controller.CustomerController;
 import exception.ApiException;
 import exception.NotFoundException;
 import java.io.IOException;
@@ -107,6 +108,21 @@ public class Server {
             VillaController.deleteRoom(res, villaId, roomId);
         }
 
+        // --- rute customer ---
+        else if (method.equals("GET") && path.equals("/customers")) {
+            CustomerController.getAll(res);
+        } else if (method.equals("GET") && path.matches("^/customers/\\d+$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            CustomerController.getDetail(res, id);
+        } else if (method.equals("POST") && path.equals("/customers")) {
+            CustomerController.createCustomer(req, res);
+        } else if (method.equals("PUT") && path.matches("^/customers/\\d+$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            CustomerController.updateCustomer(req, res, id);
+        } else if (method.equals("DELETE") && path.matches("^/customers/\\d+$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            CustomerController.deleteCustomer(res, id);
+        }
         // --- rute Unknown  ---
         else {
             throw new NotFoundException("Endpoint not found: " + method + " " + path);
