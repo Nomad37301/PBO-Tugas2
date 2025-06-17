@@ -55,6 +55,14 @@ public class DB {
                     "FOREIGN KEY (villa) REFERENCES villas(id)" +
                     ")");
 
+            // Table: customers (TAMBAHAN UNTUK CUSTOMER)
+            stmt.execute("CREATE TABLE IF NOT EXISTS customers (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "name TEXT NOT NULL," +
+                    "email TEXT NOT NULL UNIQUE," + // Email harus unik
+                    "phone TEXT" +
+                    ")");
+
             System.out.println("✅ Database initialized.");
 
         } catch (SQLException e) {
