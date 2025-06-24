@@ -2,7 +2,7 @@ package model;
 
 public class Vouchers {
     public  int id;
-    public String name;         // ← ini yang sebelumnya tidak ada
+    public String name;         
     @Override
     public String toString() {
         return "ID: " + id + ", Name: " + name + ", Discount: " + discount + "%";
