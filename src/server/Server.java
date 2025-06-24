@@ -4,6 +4,7 @@ import app.Main;
 import controller.VillaController;
 import controller.CustomerController;
 import controller.VoucherController;
+import controller.ReviewController;
 import exception.ApiException;
 import exception.NotFoundException;
 import java.io.IOException;
@@ -151,7 +152,40 @@ public class Server {
             res.send();
         }
 
-            
+        // --- GET /villas/{id}/bookings ---
+        else if (method.equals("GET") && path.matches("^/villas/\\d+/bookings$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            VillaController.getBookings(res, id);
+        }
+
+        // --- GET /villas?ci_date=...&co_date=... ---
+        else if (method.equals("GET") && path.startsWith("/villas") &&
+                JsonUtil.getQueryParam(path, "ci_date") != null &&
+                JsonUtil.getQueryParam(path, "co_date") != null) {
+            VillaController.checkAvailability(req, res);
+        }
+
+        // --- GET /customers/{id}/bookings ---
+        else if (method.equals("GET") && path.matches("^/customers/\\d+/bookings$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            CustomerController.getBookings(res, id);
+        }
+
+        // --- POST /customers/{id}/bookings ---
+        else if (method.equals("POST") && path.matches("^/customers/\\d+/bookings$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            CustomerController.createBooking(req, res, id);
+        }
+
+        // Rute review controller
+        else if (method.equals("POST") && path.matches("^/customers/\\d+/bookings/\\d+/reviews$")) {
+            String[] parts = path.split("/");
+            int customerId = Integer.parseInt(parts[2]);
+            int bookingId = Integer.parseInt(parts[4]);
+            ReviewController.createReview(req, res, customerId, bookingId);
+        }
+
+
         // --- rute Unknown  ---
         else {
             throw new NotFoundException("Endpoint not found: " + method + " " + path);

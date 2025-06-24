@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.RoomType;
 import model.Villa;
+import model.Bookings;
 import server.Request;
 import server.Response;
 import util.JsonUtil;
@@ -319,6 +320,80 @@ public class VillaController {
 
         } catch (Exception e) {
             throw new ApiException(500, "Delete error: " + e.getMessage());
+        }
+    }
+
+    public static void getBookings(Response res, int villaId) {
+        List<Bookings> bookings = new ArrayList<>();
+
+        try (Connection conn = DB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM bookings WHERE villa_id = ?")) {
+
+            stmt.setInt(1, villaId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Bookings b = new Bookings(
+                        rs.getInt("id"),
+                        rs.getInt("villa_id"),
+                        rs.getInt("customer_id"),
+                        rs.getString("check_in_date"),
+                        rs.getString("check_out_date")
+                );
+                bookings.add(b);
+            }
+
+            res.setStatus(200);
+            res.setBody(JsonUtil.toJson(bookings));
+            res.send();
+
+        } catch (Exception e) {
+            throw new ApiException(500, "Database error: " + e.getMessage());
+        }
+    }
+
+    public static void checkAvailability(Request req, Response res) {
+        String path = req.getPath();
+        String ciDate = JsonUtil.getQueryParam(path, "ci_date");
+        String coDate = JsonUtil.getQueryParam(path, "co_date");
+
+        if (ciDate == null || coDate == null) {
+            throw new BadRequestException("Parameter check-in dan check-out wajib diisi.");
+        }
+
+        List<Villa> available = new ArrayList<>();
+
+        try (Connection conn = DB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("""
+             SELECT * FROM villas
+             WHERE id NOT IN (
+                 SELECT villa_id FROM bookings
+                 WHERE NOT (
+                     check_out_date <= ? OR check_in_date >= ?
+                 )
+             )
+         """)) {
+
+            stmt.setString(1, ciDate);
+            stmt.setString(2, coDate);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Villa v = new Villa(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        rs.getString("address")
+                );
+                available.add(v);
+            }
+
+            res.setStatus(200);
+            res.setBody(JsonUtil.toJson(available));
+            res.send();
+
+        } catch (Exception e) {
+            throw new ApiException(500, "Database error: " + e.getMessage());
         }
     }
 }

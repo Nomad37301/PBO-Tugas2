@@ -55,6 +55,28 @@ public class DB {
                     "FOREIGN KEY (villa) REFERENCES villas(id)" +
                     ")");
 
+            stmt.execute("CREATE TABLE IF NOT EXISTS bookings (" +
+                    "id INTEGER PRIMARY KEY," +
+                    "customer INTEGER," +
+                    "room_type INTEGER," +
+                    "checkin_date TEXT NOT NULL," +
+                    "checkout_date TEXT NOT NULL," +
+                    "price INTEGER," +
+                    "voucher INTEGER," +
+                    "final_price INTEGER," +
+                    "payment_status TEXT DEFAULT 'waiting'," +
+                    "has_checkin INTEGER DEFAULT 0," +
+                    "has_checkout INTEGER DEFAULT 0" +
+                    ")");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS reviews (" +
+                    "booking INTEGER PRIMARY KEY," +
+                    "villa_id INTEGER," +
+                    "star INTEGER NOT NULL," +
+                    "title TEXT NOT NULL," +
+                    "content TEXT NOT NULL" +
+                    ")");
+
             // Table: customers (TAMBAHAN UNTUK CUSTOMER)
             stmt.execute("CREATE TABLE IF NOT EXISTS customers (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +

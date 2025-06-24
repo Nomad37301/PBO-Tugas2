@@ -14,4 +14,13 @@ public class Bookings {
     public boolean has_checkout;
 
     public Bookings() {}
+
+    public Bookings(int id, int customer, int room_type, String checkin_date, String checkout_date) {
+        this.id = id;
+        this.customer = customer;
+        this.room_type = room_type;
+        this.checkin_date = checkin_date;
+        this.checkout_date = checkout_date;
+    }
+
 }

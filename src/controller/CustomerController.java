@@ -4,9 +4,9 @@ import database.DB;
 import exception.ApiException;
 import exception.BadRequestException;
 import exception.NotFoundException;
-import model.Customers; // Menggunakan model Customers sesuai keinginanmu
-// import model.Booking; // Impor ini jika/ketika kamu mengimplementasikan endpoint bookings
-// import model.Review;  // Impor ini jika/ketika kamu mengimplementasikan endpoint reviews
+import model.Customers;
+import model.Bookings;
+import model.Reviews;
 import server.Request;
 import server.Response;
 import util.JsonUtil;
@@ -185,6 +185,98 @@ public class CustomerController {
         } catch (Exception e) {
             System.err.println("Delete error: " + e.getMessage());
             throw new ApiException(500, "Delete error: " + e.getMessage());
+        }
+    }
+
+    public static void getBookings(Response res, int customerId) {
+        List<Bookings> bookings = new ArrayList<>();
+
+        try (Connection conn = DB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM bookings WHERE customer = ?")) {
+
+            stmt.setInt(1, customerId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Bookings b = new Bookings();
+                b.id = rs.getInt("id");
+                b.customer = rs.getInt("customer");
+                b.room_type = rs.getInt("room_type");
+                b.checkin_date = rs.getString("checkin_date");
+                b.checkout_date = rs.getString("checkout_date");
+                b.price = rs.getInt("price");
+                b.voucher = rs.getInt("voucher");
+                b.final_price = rs.getInt("final_price");
+                b.payment_status = rs.getString("payment_status");
+                b.has_checkin = rs.getBoolean("has_checkin");
+                b.has_checkout = rs.getBoolean("has_checkout");
+                bookings.add(b);
+            }
+
+            res.setStatus(200);
+            res.setBody(JsonUtil.toJson(bookings));
+            res.send();
+
+        } catch (Exception e) {
+            throw new ApiException(500, "Database error: " + e.getMessage());
+        }
+    }
+
+    public static void createBooking(Request req, Response res, int customerId) {
+        Bookings b = JsonUtil.fromJson(req.getBody(), Bookings.class);
+
+        if (b == null || b.room_type == 0 || b.checkin_date == null || b.checkout_date == null) {
+            throw new BadRequestException("Data booking tidak lengkap.");
+        }
+
+        try (Connection conn = DB.getConnection()) {
+            // Validasi ketersediaan kamar
+            String check = """
+            SELECT * FROM bookings
+            WHERE room_type = ? AND NOT (
+                checkout_date <= ? OR checkin_date >= ?
+            )
+        """;
+
+            try (PreparedStatement stmt = conn.prepareStatement(check)) {
+                stmt.setInt(1, b.room_type);
+                stmt.setString(2, b.checkin_date);
+                stmt.setString(3, b.checkout_date);
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    throw new BadRequestException("Kamar tidak tersedia pada tanggal tersebut.");
+                }
+            }
+
+            // Insert booking
+            String insert = """
+            INSERT INTO bookings (customer, room_type, checkin_date, checkout_date, price, voucher, final_price, payment_status, has_checkin, has_checkout)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+
+            try (PreparedStatement stmt = conn.prepareStatement(insert)) {
+                stmt.setInt(1, customerId);
+                stmt.setInt(2, b.room_type);
+                stmt.setString(3, b.checkin_date);
+                stmt.setString(4, b.checkout_date);
+                stmt.setInt(5, b.price);
+                stmt.setInt(6, b.voucher);
+                stmt.setInt(7, b.final_price);
+                stmt.setString(8, b.payment_status != null ? b.payment_status : "pending");
+                stmt.setBoolean(9, false);
+                stmt.setBoolean(10, false);
+                stmt.executeUpdate();
+            }
+
+            res.setStatus(201);
+            res.setBody("{\"message\":\"Booking berhasil dibuat.\"}");
+            res.send();
+
+        } catch (ApiException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ApiException(500, "Database error: " + e.getMessage());
         }
     }
 }
