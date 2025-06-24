@@ -3,6 +3,7 @@ package server;
 import app.Main;
 import controller.VillaController;
 import controller.CustomerController;
+import controller.VoucherController;
 import exception.ApiException;
 import exception.NotFoundException;
 import java.io.IOException;
@@ -123,6 +124,34 @@ public class Server {
             int id = Integer.parseInt(path.split("/")[2]);
             CustomerController.deleteCustomer(res, id);
         }
+            
+        // --- rute voucher ---
+        else if (method.equals("GET") && path.equals("/vouchers")) {
+            res.setHeader("Content-Type", "application/json");
+            res.setBody(VoucherController.getAllVouchers());
+            res.send();
+        } else if (method.equals("GET") && path.matches("^/vouchers/\\d+$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            res.setHeader("Content-Type", "application/json");
+            res.setBody(JsonUtil.toJson(VoucherController.getVoucherById(id)));
+            res.send();
+        } else if (method.equals("POST") && path.equals("/vouchers")) {
+            res.setHeader("Content-Type", "application/json");
+            res.setBody(JsonUtil.toJson(VoucherController.createVoucher(req.getBody())));
+            res.send();
+        } else if (method.equals("PUT") && path.matches("^/vouchers/\\d+$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            res.setHeader("Content-Type", "application/json");
+            res.setBody(JsonUtil.toJson(VoucherController.updateVoucher(id, req.getBody())));
+            res.send();
+        } else if (method.equals("DELETE") && path.matches("^/vouchers/\\d+$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            res.setHeader("Content-Type", "application/json");
+            res.setBody(JsonUtil.toJson(VoucherController.deleteVoucher(id)));
+            res.send();
+        }
+
+            
         // --- rute Unknown  ---
         else {
             throw new NotFoundException("Endpoint not found: " + method + " " + path);
