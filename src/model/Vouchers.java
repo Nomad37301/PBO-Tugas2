@@ -2,6 +2,11 @@ package model;
 
 public class Vouchers {
     public  int id;
+    public String name;         // ← ini yang sebelumnya tidak ada
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", Discount: " + discount + "%";
+    }
     public String code;
     public String description;
     public float discount;
