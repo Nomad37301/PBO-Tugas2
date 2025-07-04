@@ -10,22 +10,21 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import model.Bookings;
+import model.Reviews;
 import model.RoomType;
 import model.Villa;
-import model.Bookings;
 import server.Request;
 import server.Response;
 import util.JsonUtil;
 import util.Validator;
 
-
 public class VillaController {
+
     public static void getAll(Response res) {
         List<Villa> villas = new ArrayList<>();
 
-        try (Connection conn = DB.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM villas")) {
+        try (Connection conn = DB.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM villas")) {
 
             while (rs.next()) {
                 Villa v = new Villa(
@@ -48,9 +47,7 @@ public class VillaController {
     }
 
     public static void getDetail(Response res, int villaId) {
-        try (Connection conn = DB.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM villas WHERE id = " + villaId)) {
+        try (Connection conn = DB.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM villas WHERE id = " + villaId)) {
 
             if (!rs.next()) {
                 throw new NotFoundException("Villa with ID " + villaId + " not found.");
@@ -76,10 +73,10 @@ public class VillaController {
     public static void createVilla(Request req, Response res) {
         model.Villa villa = JsonUtil.fromJson(req.getBody(), model.Villa.class);
 
-        if (villa == null ||
-                Validator.isEmpty(villa.name) ||
-                Validator.isEmpty(villa.description) ||
-                Validator.isEmpty(villa.address)) {
+        if (villa == null
+                || Validator.isEmpty(villa.name)
+                || Validator.isEmpty(villa.description)
+                || Validator.isEmpty(villa.address)) {
             throw new BadRequestException("Invalid villa data. 'name', 'description', and 'address' are required.");
         }
 
@@ -107,22 +104,23 @@ public class VillaController {
         }
     }
 
-        public static void updateVilla(Request req, Response res, int villaId) {
+    public static void updateVilla(Request req, Response res, int villaId) {
         model.Villa villa = JsonUtil.fromJson(req.getBody(), model.Villa.class);
 
-        if (villa == null ||
-                Validator.isEmpty(villa.name) ||
-                Validator.isEmpty(villa.description) ||
-                Validator.isEmpty(villa.address)) {
+        if (villa == null
+                || Validator.isEmpty(villa.name)
+                || Validator.isEmpty(villa.description)
+                || Validator.isEmpty(villa.address)) {
             throw new BadRequestException("Invalid data. 'name', 'description', and 'address' are required.");
         }
 
-        try (Connection conn = DB.getConnection();
-             PreparedStatement check = conn.prepareStatement("SELECT id FROM villas WHERE id = ?")) {
+        try (Connection conn = DB.getConnection(); PreparedStatement check = conn.prepareStatement("SELECT id FROM villas WHERE id = ?")) {
             check.setInt(1, villaId);
             ResultSet rs = check.executeQuery();
 
-            if (!rs.next()) throw new NotFoundException("Villa with ID " + villaId + " not found.");
+            if (!rs.next()) {
+                throw new NotFoundException("Villa with ID " + villaId + " not found.");
+            }
 
             PreparedStatement update = conn.prepareStatement(
                     "UPDATE villas SET name = ?, description = ?, address = ? WHERE id = ?");
@@ -144,12 +142,13 @@ public class VillaController {
     }
 
     public static void deleteVilla(Response res, int villaId) {
-        try (Connection conn = DB.getConnection();
-             PreparedStatement check = conn.prepareStatement("SELECT id FROM villas WHERE id = ?")) {
+        try (Connection conn = DB.getConnection(); PreparedStatement check = conn.prepareStatement("SELECT id FROM villas WHERE id = ?")) {
             check.setInt(1, villaId);
             ResultSet rs = check.executeQuery();
 
-            if (!rs.next()) throw new NotFoundException("Villa with ID " + villaId + " not found.");
+            if (!rs.next()) {
+                throw new NotFoundException("Villa with ID " + villaId + " not found.");
+            }
 
             PreparedStatement del = conn.prepareStatement("DELETE FROM villas WHERE id = ?");
             del.setInt(1, villaId);
@@ -168,9 +167,7 @@ public class VillaController {
     public static void getRooms(Response res, int villaId) {
         List<RoomType> rooms = new ArrayList<>();
 
-        try (Connection conn = DB.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM room_types WHERE villa = " + villaId)) {
+        try (Connection conn = DB.getConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM room_types WHERE villa = " + villaId)) {
 
             while (rs.next()) {
                 RoomType room = new RoomType();
@@ -206,15 +203,46 @@ public class VillaController {
         }
     }
 
+    public static void getReviews(Response res, int villaId) {
+        try (Connection conn = DB.getConnection()) {
+            String sql = """
+            SELECT rv.*
+            FROM reviews rv
+            JOIN bookings b ON b.id = rv.booking
+            JOIN room_types r ON b.room_type = r.id
+            WHERE r.villa = ?
+        """;
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, villaId);
+                ResultSet rs = stmt.executeQuery();
+
+                List<Reviews> reviews = new ArrayList<>();
+                while (rs.next()) {
+                    Reviews r = new Reviews();
+                    r.bookings = rs.getInt("booking");
+                    r.star = rs.getInt("star");
+                    r.title = rs.getString("title");
+                    r.content = rs.getString("content");
+                    reviews.add(r);
+                }
+
+                res.setStatus(200);
+                res.setBody(JsonUtil.toJson(reviews));
+                res.send();
+            }
+        } catch (Exception e) {
+            throw new ApiException(500, "Database error: " + e.getMessage());
+        }
+    }
 
     public static void createRoom(Request req, Response res, int villaId) {
         RoomType room = JsonUtil.fromJson(req.getBody(), RoomType.class);
 
-        if (room == null ||
-                Validator.isEmpty(room.name) ||
-                room.price <= 0 ||
-                Validator.isEmpty(room.bed_size) ||
-                (!room.bed_size.equals("double") && !room.bed_size.equals("queen") && !room.bed_size.equals("king"))) {
+        if (room == null
+                || Validator.isEmpty(room.name)
+                || room.price <= 0
+                || Validator.isEmpty(room.bed_size)
+                || (!room.bed_size.equals("double") && !room.bed_size.equals("queen") && !room.bed_size.equals("king"))) {
             throw new BadRequestException("Invalid room data. Required: name, price > 0, bed_size: double/queen/king");
         }
 
@@ -246,13 +274,13 @@ public class VillaController {
         }
     }
 
-        public static void updateRoom(Request req, Response res, int villaId, int roomId) {
+    public static void updateRoom(Request req, Response res, int villaId, int roomId) {
         RoomType room = JsonUtil.fromJson(req.getBody(), RoomType.class);
 
-        if (room == null ||
-                Validator.isEmpty(room.name) ||
-                room.price <= 0 ||
-                Validator.isEmpty(room.bed_size)) {
+        if (room == null
+                || Validator.isEmpty(room.name)
+                || room.price <= 0
+                || Validator.isEmpty(room.bed_size)) {
             throw new BadRequestException("Invalid data. Required fields missing or invalid.");
         }
 
@@ -263,12 +291,14 @@ public class VillaController {
             check.setInt(2, villaId);
             ResultSet rs = check.executeQuery();
 
-            if (!rs.next()) throw new NotFoundException("Room not found for this villa.");
+            if (!rs.next()) {
+                throw new NotFoundException("Room not found for this villa.");
+            }
 
             PreparedStatement stmt = conn.prepareStatement(
-                    "UPDATE room_types SET name = ?, quantity = ?, capacity = ?, price = ?, bed_size = ?, " +
-                            "has_desk = ?, has_ac = ?, has_tv = ?, has_wifi = ?, has_shower = ?, has_hotwater = ?, has_fridge = ? " +
-                            "WHERE id = ?");
+                    "UPDATE room_types SET name = ?, quantity = ?, capacity = ?, price = ?, bed_size = ?, "
+                    + "has_desk = ?, has_ac = ?, has_tv = ?, has_wifi = ?, has_shower = ?, has_hotwater = ?, has_fridge = ? "
+                    + "WHERE id = ?");
 
             stmt.setString(1, room.name);
             stmt.setInt(2, room.quantity);
@@ -307,7 +337,9 @@ public class VillaController {
             check.setInt(2, villaId);
             ResultSet rs = check.executeQuery();
 
-            if (!rs.next()) throw new NotFoundException("Room not found.");
+            if (!rs.next()) {
+                throw new NotFoundException("Room not found.");
+            }
 
             PreparedStatement del = conn.prepareStatement("DELETE FROM room_types WHERE id = ?");
             del.setInt(1, roomId);
@@ -324,29 +356,38 @@ public class VillaController {
     }
 
     public static void getBookings(Response res, int villaId) {
-        List<Bookings> bookings = new ArrayList<>();
+        try (Connection conn = DB.getConnection()) {
+            String sql = """
+            SELECT b.*
+            FROM bookings b
+            JOIN room_types r ON b.room_type = r.id
+            WHERE r.villa = ?
+        """;
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, villaId);
+                ResultSet rs = stmt.executeQuery();
 
-        try (Connection conn = DB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM bookings WHERE villa_id = ?")) {
+                List<Bookings> bookings = new ArrayList<>();
+                while (rs.next()) {
+                    Bookings b = new Bookings();
+                    b.id = rs.getInt("id");
+                    b.customer = rs.getInt("customer");
+                    b.room_type = rs.getInt("room_type");
+                    b.checkin_date = rs.getString("checkin_date");
+                    b.checkout_date = rs.getString("checkout_date");
+                    b.price = rs.getInt("price");
+                    b.voucher = rs.getInt("voucher");
+                    b.final_price = rs.getInt("final_price");
+                    b.payment_status = rs.getString("payment_status");
+                    b.has_checkin = rs.getBoolean("has_checkin");
+                    b.has_checkout = rs.getBoolean("has_checkout");
+                    bookings.add(b);
+                }
 
-            stmt.setInt(1, villaId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Bookings b = new Bookings(
-                        rs.getInt("id"),
-                        rs.getInt("villa_id"),
-                        rs.getInt("customer_id"),
-                        rs.getString("check_in_date"),
-                        rs.getString("check_out_date")
-                );
-                bookings.add(b);
+                res.setStatus(200);
+                res.setBody(JsonUtil.toJson(bookings));
+                res.send();
             }
-
-            res.setStatus(200);
-            res.setBody(JsonUtil.toJson(bookings));
-            res.send();
-
         } catch (Exception e) {
             throw new ApiException(500, "Database error: " + e.getMessage());
         }
@@ -396,4 +437,3 @@ public class VillaController {
         }
     }
 }
-

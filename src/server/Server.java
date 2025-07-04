@@ -1,10 +1,10 @@
 package server;
 
 import app.Main;
-import controller.VillaController;
 import controller.CustomerController;
-import controller.VoucherController;
 import controller.ReviewController;
+import controller.VillaController;
+import controller.VoucherController;
 import exception.ApiException;
 import exception.NotFoundException;
 import java.io.IOException;
@@ -89,6 +89,12 @@ public class Server {
         } else if (method.equals("DELETE") && path.matches("^/villas/\\d+$")) {
             int id = Integer.parseInt(path.split("/")[2]);
             VillaController.deleteVilla(res, id);
+        } else if (method.equals("GET") && path.matches("^/villas/\\d+/bookings$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            VillaController.getBookings(res, id);
+        } else if (method.equals("GET") && path.matches("^/villas/\\d+/reviews$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            VillaController.getReviews(res, id);
         }
 
         // --- rute roomtype ---
@@ -156,12 +162,6 @@ public class Server {
             res.send();
         }
 
-        // --- GET /villas/{id}/bookings ---
-        else if (method.equals("GET") && path.matches("^/villas/\\d+/bookings$")) {
-            int id = Integer.parseInt(path.split("/")[2]);
-            VillaController.getBookings(res, id);
-        }
-
         // --- GET /villas?ci_date=...&co_date=... ---
         else if (method.equals("GET") && path.startsWith("/villas") &&
                 JsonUtil.getQueryParam(path, "ci_date") != null &&
@@ -188,7 +188,6 @@ public class Server {
             int bookingId = Integer.parseInt(parts[4]);
             ReviewController.createReview(req, res, customerId, bookingId);
         }
-
 
         // --- rute Unknown  ---
         else {
