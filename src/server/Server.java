@@ -113,6 +113,10 @@ public class Server {
         // --- rute customer ---
         else if (method.equals("GET") && path.equals("/customers")) {
             CustomerController.getAll(res);
+        }
+        else if (method.equals("GET") && path.matches("^/customers/\\d+/reviews$")) {
+            int id = Integer.parseInt(path.split("/")[2]);
+            CustomerController.getReviews(res, id);
         } else if (method.equals("GET") && path.matches("^/customers/\\d+$")) {
             int id = Integer.parseInt(path.split("/")[2]);
             CustomerController.getDetail(res, id);
