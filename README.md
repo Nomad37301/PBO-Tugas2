@@ -85,12 +85,81 @@ Response:
 1. Jalankan aplikasi dari IntelliJ.
 2. Buka **Postman**.
 3. Gunakan endpoint-endpoint berikut untuk menguji:
+## `Endpoint : /customers`
+# `GET`
    - `GET /customers` → Menampilkan semua pelanggan
+     ![image](https://github.com/user-attachments/assets/33d8b8f1-0e62-4810-8b66-e4ae877f65c8)
+
+   - `GET /customers/{id}` → Menampilkan Detail Satu Customer
+     ![image](https://github.com/user-attachments/assets/b9882079-e399-42e0-b3b2-e07f31c8cfd1)
+     
+   - `GET /customers/{id}/bookings` Menampilkan Daftar Booking Milik Customer
+     ![image](https://github.com/user-attachments/assets/55c8b00f-47dc-4217-b250-f4e3cb34fe91)
+
+   - `GET /customers/{id}/reviews` Menampilkan Ulasan Customer
+     ![image](https://github.com/user-attachments/assets/21282fd3-d023-455d-b099-a43b552e91aa)
+
+   # `POST`
    - `POST /customers` → Menambahkan pelanggan baru
+     ![image](https://github.com/user-attachments/assets/52ca86b2-3245-4f10-8c84-6fdddce51f6d)
+
+   - `POST /customers/{id}/bookings` Customer Melakukan Pemesanan Villa
+     ![image](https://github.com/user-attachments/assets/604ffcf4-a868-4bab-a39d-28df03425276)
+
+   - `POST /customers/{id}/bookings/{id}/reviews`
+     ![image](https://github.com/user-attachments/assets/248128e9-e2e8-4086-9e33-ed02871cb3c5)
+
+   # PUT
+   - `PUT /customers/{id}` → Update data pelanggan
+     ![image](https://github.com/user-attachments/assets/93737ad8-a4cc-4c92-9fe2-c17091f84351)
+     
+   # DELETE
+   - `DELETE /customers/{id}` → Hapus pelanggan
+     ![image](https://github.com/user-attachments/assets/4f5a9054-4cb3-4ce0-aa41-9782c807b9cb)
+
+## `Endpoint : /villas`
    - `GET /villas` → Menampilkan daftar villa
-   - `POST /bookings` → Melakukan booking
-   - `POST /reviews` → Mengirim ulasan
-4. Pastikan menggunakan format JSON untuk request dan response body.
+     ![image](https://github.com/user-attachments/assets/f333b8a2-bad5-46d8-86cd-90514f9368aa)
+
+   - `GET /villas/{id}` Menampilkan Informasi detail suatu villa
+     ![image](https://github.com/user-attachments/assets/c67f8bcf-2b6d-4204-a68a-0e188b091a9b)
+
+   - `GET /villas/{id}/rooms` Menampilkan informasi detail suatu villa dengan lengkap dengan fasilitas dan harga
+     ![image](https://github.com/user-attachments/assets/68457cbd-2d89-4b0b-96ae-036a154b18b0)
+
+   - `GET /villas/{id}/bookings` Menampilkan Daftar Semua Booking Pada Suatu Villa
+     
+   - `GET /villas/{id}/reviews` Menampilkan Daftar Semua Reviews
+   - `GET /villas?ci_date={checkin_date}&co_date={checkout_date}` Pencarian ketersediaan vila berdasarkan tanggal check-in dan checkout.
+   - `POST /villas` Menambahkan Villa Baru
+     ![image](https://github.com/user-attachments/assets/c61f8317-3a07-4ef4-8b33-6da880a8acad)
+
+   - `POST /villas/{id}/rooms` Menambahkan Tipe Kamar Pada Villa
+     ![image](https://github.com/user-attachments/assets/f2a7ece3-200a-4360-9e1d-8a57c9d21903)
+
+   - `PUT /villas/{id}` Mengubah data suatu villa
+   - 
+   - `PUT /villas/{id}/rooms/{id}` Mengubah informasi kamar suatu villa
+   - `DELETE /villas/{id}/rooms/{id}` Menghapus Kamar Suatu Villa
+   - `DELETE /villas/{id}` Menghapus data suatu villa
+
+## `Endpoint : /Vouchers`
+   - `GET /vouchers` Menampilkan vouchers yang tersedia
+     ![image](https://github.com/user-attachments/assets/bc6e4d93-42a1-4e2c-bf09-dc58fa916af6)
+
+   - `GET /vouchers/{id}` Menampilkan informasi detail suatu vouchers
+     ![image](https://github.com/user-attachments/assets/d1e75ddb-ca92-4110-a708-1c33df4eff5e)
+
+   - `POST /vouchers` Membuat vouchers
+     ![image](https://github.com/user-attachments/assets/e4345f7f-b009-42fc-be20-96c3428acf3f)
+     
+   - `PUT /vouchers/{id}` Mengubah data suatu vouchers
+     ![image](https://github.com/user-attachments/assets/938da464-b034-409c-b6ff-90b76b2230bd)
+
+   - `DELETE /vouchers/{id}` Menghapus vouchers
+     ![image](https://github.com/user-attachments/assets/837a286a-eeb4-4b6e-b253-6cf22a165fb0)
+
+5. Pastikan menggunakan format JSON untuk request dan response body.
 
 > Endpoint lengkap dan dokumentasi API bisa dilihat dalam file controller terkait.
 
