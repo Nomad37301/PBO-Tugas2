@@ -84,6 +84,18 @@ public class DB {
                     "phone TEXT" +
                     ")");
 
+            // Table: vouchers
+            stmt.execute("CREATE TABLE IF NOT EXISTS vouchers (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "name TEXT NOT NULL," +
+                    "code TEXT NOT NULL UNIQUE," +
+                    "description TEXT," +
+                    "discount REAL NOT NULL," +
+                    "start_date TEXT NOT NULL," +
+                    "end_date TEXT NOT NULL" +
+                    ")");
+
+
             System.out.println("✅ Database initialized.");
 
         } catch (SQLException e) {
