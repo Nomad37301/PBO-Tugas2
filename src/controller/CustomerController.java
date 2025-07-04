@@ -279,4 +279,37 @@ public class CustomerController {
             throw new ApiException(500, "Database error: " + e.getMessage());
         }
     }
+
+    public static void getReviews(Response res, int customerId) {
+        try (Connection conn = DB.getConnection()) {
+            String sql = """
+            SELECT reviews.*
+            FROM reviews
+            JOIN bookings ON bookings.id = reviews.booking
+            WHERE bookings.customer = ?
+        """;
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, customerId);
+                ResultSet rs = stmt.executeQuery();
+
+                List<Reviews> reviews = new ArrayList<>();
+                while (rs.next()) {
+                    Reviews r = new Reviews();
+                    r.bookings = rs.getInt("booking");
+                    r.star = rs.getInt("star");
+                    r.title = rs.getString("title");
+                    r.content = rs.getString("content");
+                    reviews.add(r);
+                }
+
+                res.setStatus(200);
+                res.setBody(JsonUtil.toJson(reviews));
+                res.send();
+            }
+
+        } catch (Exception e) {
+            throw new ApiException(500, "Database error: " + e.getMessage());
+        }
+    }
 }
