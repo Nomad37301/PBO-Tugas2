@@ -89,33 +89,42 @@ Response:
 # `GET`
    - `GET /customers` → Menampilkan semua pelanggan
      ![image](https://github.com/user-attachments/assets/33d8b8f1-0e62-4810-8b66-e4ae877f65c8)
+     Endpoint ini digunakan untuk mengambil seluruh data pelanggan dari database. Permintaan dikirim menggunakan method GET tanpa parameter tambahan. Pada tangkapan layar di atas, terlihat bahwa response berhasil dikembalikan oleh server dengan status 200 OK, dan data pelanggan ditampilkan dalam format JSON lengkap, mencakup ID, nama, email, dan nomor telepon.
 
    - `GET /customers/{id}` → Menampilkan Detail Satu Customer
      ![image](https://github.com/user-attachments/assets/b9882079-e399-42e0-b3b2-e07f31c8cfd1)
+     Endpoint ini digunakan untuk menampilkan informasi detail dari satu pelanggan berdasarkan ID-nya. Permintaan dilakukan menggunakan method GET, dengan parameter ID yang disisipkan langsung pada URL. Pada contoh tangkapan layar di atas, ID pelanggan yang diambil adalah 4, dan server merespons dengan status 200 OK, menampilkan data lengkap pelanggan berupa id, name, email, dan phone dalam format JSON.
      
    - `GET /customers/{id}/bookings` Menampilkan Daftar Booking Milik Customer
      ![image](https://github.com/user-attachments/assets/55c8b00f-47dc-4217-b250-f4e3cb34fe91)
-
+     Endpoint ini berfungsi untuk menampilkan seluruh data booking yang dimiliki oleh seorang customer tertentu, berdasarkan ID-nya. Permintaan dikirim menggunakan method GET dengan format URL /customers/{id}/bookings. Pada contoh di atas, sistem mengembalikan daftar pemesanan milik customer dengan ID 4, berisi informasi seperti id, room_type, checkin_date, checkout_date, price, dan status booking. Respons berhasil dikembalikan dengan status 200 OK, menandakan permintaan berhasil diproses oleh server.
+     
    - `GET /customers/{id}/reviews` Menampilkan Ulasan Customer
      ![image](https://github.com/user-attachments/assets/21282fd3-d023-455d-b099-a43b552e91aa)
+     Endpoint ini digunakan untuk menampilkan semua ulasan atau review yang telah diberikan oleh seorang customer tertentu. Permintaan ini menggunakan method GET dan ditujukan ke URL /customers/{id}/reviews, dengan {id} adalah ID dari customer yang dimaksud. Pada contoh tangkapan layar di atas, data ulasan yang ditampilkan mencakup booking, star, title, dan content. Respons dikembalikan dengan status 200 OK, yang menandakan bahwa permintaan berhasil dan ulasan berhasil ditampilkan.
 
    # `POST`
    - `POST /customers` → Menambahkan pelanggan baru
      ![image](https://github.com/user-attachments/assets/52ca86b2-3245-4f10-8c84-6fdddce51f6d)
-
+     Endpoint ini berfungsi untuk menambahkan data pelanggan baru ke dalam sistem. Permintaan ini dikirim menggunakan method POST dengan body berisi informasi pelanggan seperti name, email, dan phone. Setelah data dikirim, server akan memproses permintaan dan memberikan respons berupa data pelanggan yang telah dibuat beserta ID-nya. Respons yang diterima berupa JSON dan disertai status 201 Created, menandakan bahwa pelanggan berhasil ditambahkan ke dalam database.
+     
    - `POST /customers/{id}/bookings` Customer Melakukan Pemesanan Villa
      ![image](https://github.com/user-attachments/assets/604ffcf4-a868-4bab-a39d-28df03425276)
+     Endpoint ini digunakan ketika seorang customer ingin melakukan pemesanan villa. Permintaan dikirim dengan method POST dan menyertakan ID customer pada path URL. Di dalam body permintaan, data yang dikirim meliputi informasi pemesanan seperti room_type, checkin_date, checkout_date, dan dapat juga menyertakan voucher jika ada. Setelah permintaan dikirim, server akan mencatat pemesanan dan mengembalikan detail booking yang telah dibuat dalam format JSON, termasuk harga akhir dan status pembayaran. Status respons 201 Created menandakan bahwa pemesanan berhasil dilakukan.
 
    - `POST /customers/{id}/bookings/{id}/reviews`
      ![image](https://github.com/user-attachments/assets/248128e9-e2e8-4086-9e33-ed02871cb3c5)
-
+     Endpoint ini memungkinkan customer memberikan ulasan terhadap villa yang telah mereka pesan. Dengan menggunakan method POST, client mengirim permintaan ke endpoint yang menyertakan ID customer dan ID booking. Body permintaan harus berisi data ulasan seperti star (1–5), title, dan content. Sebelum review disimpan, server akan memverifikasi bahwa pemesanan tersebut memang dimiliki oleh customer terkait. Jika valid, status has_checkin dan has_checkout akan diperbarui menjadi 1, lalu ulasan disimpan. Respons 201 Created menandakan ulasan berhasil ditambahkan ke dalam sistem.
+     
    # PUT
    - `PUT /customers/{id}` → Update data pelanggan
      ![image](https://github.com/user-attachments/assets/93737ad8-a4cc-4c92-9fe2-c17091f84351)
+     Endpoint ini digunakan untuk memperbarui informasi dari pelanggan tertentu. Permintaan dikirim menggunakan method PUT ke endpoint dengan menyertakan ID pelanggan. Di dalam body permintaan, client mengisi data baru seperti name, email, dan phone. Server akan memverifikasi apakah pelanggan dengan ID tersebut ada, lalu memperbarui datanya sesuai dengan input yang diberikan. Jika berhasil, server merespons dengan status 200 OK beserta data pelanggan yang telah diperbarui.
      
    # DELETE
    - `DELETE /customers/{id}` → Hapus pelanggan
      ![image](https://github.com/user-attachments/assets/4f5a9054-4cb3-4ce0-aa41-9782c807b9cb)
+     Endpoint ini digunakan untuk menghapus data pelanggan berdasarkan ID yang diberikan pada URL. Permintaan dikirim dengan method DELETE. Setelah server memverifikasi keberadaan pelanggan, data pelanggan tersebut akan dihapus dari database. Jika berhasil, server mengembalikan respons dengan status 200 OK dan pesan konfirmasi bahwa pelanggan telah berhasil dihapus.
 
 ## `Endpoint : /villas`
    - `GET /villas` → Menampilkan daftar villa
@@ -146,19 +155,24 @@ Response:
 ## `Endpoint : /Vouchers`
    - `GET /vouchers` Menampilkan vouchers yang tersedia
      ![image](https://github.com/user-attachments/assets/bc6e4d93-42a1-4e2c-bf09-dc58fa916af6)
+     Endpoint ini digunakan untuk mengambil daftar semua voucher yang tersedia. Permintaan dikirim menggunakan method GET tanpa perlu mengisi body request. Server akan membalas dengan data berupa array JSON yang berisi informasi setiap voucher, seperti id, name, code, description, discount, start_date, dan end_date. Respons berhasil ditandai dengan status 200 OK.
 
    - `GET /vouchers/{id}` Menampilkan informasi detail suatu vouchers
      ![image](https://github.com/user-attachments/assets/d1e75ddb-ca92-4110-a708-1c33df4eff5e)
+     Endpoint ini digunakan untuk menampilkan detail dari satu voucher berdasarkan ID-nya. Permintaan dilakukan menggunakan method GET dengan menambahkan id voucher di bagian akhir URL. Server akan merespons dengan data voucher yang sesuai dalam format JSON. Informasi yang ditampilkan meliputi nama, kode, deskripsi, besar diskon, tanggal mulai, dan tanggal berakhir. Jika ID tidak ditemukan, server akan mengembalikan pesan error.
 
    - `POST /vouchers` Membuat vouchers
      ![image](https://github.com/user-attachments/assets/e4345f7f-b009-42fc-be20-96c3428acf3f)
+     Endpoint ini digunakan untuk menambahkan data voucher baru ke sistem. Permintaan dikirim dengan method POST dan berisi data voucher seperti name, code, description, discount, start_date, dan end_date dalam format form URL-encoded. Setelah berhasil, server akan merespons dengan pesan konfirmasi bahwa voucher berhasil ditambahkan. Endpoint ini sangat berguna untuk keperluan promosi atau potongan harga pada sistem pemesanan.
      
    - `PUT /vouchers/{id}` Mengubah data suatu vouchers
      ![image](https://github.com/user-attachments/assets/938da464-b034-409c-b6ff-90b76b2230bd)
+     Endpoint ini digunakan untuk memperbarui informasi voucher yang sudah ada berdasarkan ID-nya. Permintaan dikirim menggunakan method PUT dan berisi data yang ingin diperbarui, seperti name, code, description, discount, start_date, dan end_date. Data dikirim dalam format form URL-encoded. Jika ID voucher ditemukan dan data valid, maka server akan memberikan respons berupa pesan bahwa voucher berhasil diupdate. Fitur ini penting ketika admin ingin mengubah detail promo tanpa harus menghapus dan membuat ulang.
 
    - `DELETE /vouchers/{id}` Menghapus vouchers
      ![image](https://github.com/user-attachments/assets/837a286a-eeb4-4b6e-b253-6cf22a165fb0)
-
+     Endpoint ini digunakan untuk menghapus voucher tertentu berdasarkan ID-nya. Permintaan dikirim menggunakan method DELETE. Jika ID yang diberikan sesuai dengan voucher yang ada, maka sistem akan menghapus data tersebut dari daftar voucher dan memberikan respons berupa pesan konfirmasi bahwa voucher berhasil dihapus. Fitur ini berguna untuk mengelola promo yang sudah tidak berlaku atau ingin dihapus dari sistem.
+     
 5. Pastikan menggunakan format JSON untuk request dan response body.
 
 > Endpoint lengkap dan dokumentasi API bisa dilihat dalam file controller terkait.
