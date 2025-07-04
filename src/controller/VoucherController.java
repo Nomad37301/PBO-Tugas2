@@ -27,7 +27,11 @@ public class VoucherController {
         Vouchers newVoucher = new Vouchers();
         newVoucher.id = idCounter++;
         newVoucher.name = params.get("name");
-        newVoucher.discount = Integer.parseInt(params.get("discount"));
+        newVoucher.code = params.get("code");
+        newVoucher.description = params.get("description");
+        newVoucher.discount = Float.parseFloat(params.get("discount"));
+        newVoucher.start_date = params.get("start_date");
+        newVoucher.end_date = params.get("end_date");
         vouchers.add(newVoucher);
         return "Voucher berhasil ditambahkan";
     }
@@ -37,7 +41,11 @@ public class VoucherController {
         for (Vouchers v : vouchers) {
             if (v.id == id) {
                 v.name = params.get("name");
-                v.discount = Integer.parseInt(params.get("discount"));
+                v.code = params.get("code");
+                v.description = params.get("description");
+                v.discount = Float.parseFloat(params.get("discount"));
+                v.start_date = params.get("start_date");
+                v.end_date = params.get("end_date");
                 return "Voucher berhasil diupdate";
             }
         }
