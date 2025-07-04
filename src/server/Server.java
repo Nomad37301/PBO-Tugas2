@@ -136,30 +136,20 @@ public class Server {
             CustomerController.deleteCustomer(res, id);
         }
             
-        // --- rute voucher ---
+        // --- rute voucher --
         else if (method.equals("GET") && path.equals("/vouchers")) {
-            res.setHeader("Content-Type", "application/json");
-            res.setBody(VoucherController.getAllVouchers());
-            res.send();
+            VoucherController.getAllVouchers(res);
         } else if (method.equals("GET") && path.matches("^/vouchers/\\d+$")) {
             int id = Integer.parseInt(path.split("/")[2]);
-            res.setHeader("Content-Type", "application/json");
-            res.setBody(JsonUtil.toJson(VoucherController.getVoucherById(id)));
-            res.send();
+            VoucherController.getVoucherById(res, id);
         } else if (method.equals("POST") && path.equals("/vouchers")) {
-            res.setHeader("Content-Type", "application/json");
-            res.setBody(JsonUtil.toJson(VoucherController.createVoucher(req.getBody())));
-            res.send();
+            VoucherController.createVoucher(req, res);
         } else if (method.equals("PUT") && path.matches("^/vouchers/\\d+$")) {
             int id = Integer.parseInt(path.split("/")[2]);
-            res.setHeader("Content-Type", "application/json");
-            res.setBody(JsonUtil.toJson(VoucherController.updateVoucher(id, req.getBody())));
-            res.send();
+            VoucherController.updateVoucher(req, res, id);
         } else if (method.equals("DELETE") && path.matches("^/vouchers/\\d+$")) {
             int id = Integer.parseInt(path.split("/")[2]);
-            res.setHeader("Content-Type", "application/json");
-            res.setBody(JsonUtil.toJson(VoucherController.deleteVoucher(id)));
-            res.send();
+            VoucherController.deleteVoucher(res, id);
         }
 
         // --- GET /villas?ci_date=...&co_date=... ---
