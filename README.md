@@ -2,6 +2,12 @@
 
 Proyek ini merupakan bagian dari tugas Pemrograman Berorientasi Objek (PBO), yang bertujuan untuk mengimplementasikan konsep OOP, exception handling, dan integrasi database dalam pengembangan aplikasi manajemen villa berbasis Java.
 
+## Identitas Kami
+1. Jihan Alya Qanita (2405551120)
+2. I Ketut Bagus Nugraha (2405551139)
+3. ANAK AGUNG GDE PUTRA PURNAMA (2405551172)
+4. I Kadek Bayu Mahardika Suputra (2405551117)
+
 ## 📌 Deskripsi Proyek
 Aplikasi ini dirancang untuk mengelola proses reservasi villa secara digital. Pelanggan dapat mendaftar, melihat tipe villa, melakukan pemesanan, mengklaim voucher diskon, dan memberikan ulasan setelah menginap. Backend API ini ditujukan untuk dipakai oleh antarmuka client seperti web atau mobile apps.
 
@@ -85,6 +91,56 @@ Response:
 1. Jalankan aplikasi dari IntelliJ.
 2. Buka **Postman**.
 3. Gunakan endpoint-endpoint berikut untuk menguji:
+## `Endpoint : /villas`
+# `GET`
+  - `GET /villas` → Menampilkan semua villa
+  ![Screenshot 2025-07-04 231546](https://github.com/user-attachments/assets/3d4ba8fe-1abc-4140-aae4-0ce6fc0c0a33)
+  Endpoint ini digunakan untuk mengambil seluruh data villa yang ada dari database. Permintaan dikirim menggunakan method GET tanpa parameter tambahan. Pada tangkapan layar di atas, terlihat bahwa response berhasil dikembalikan oleh server dengan status 200 OK, dan data villa yang sudah di buat akan ditampilkan dalam format JSON.
+
+- `GET /villas/{id}` → Menampilkan villa berdasarkan id spesifik
+![Screenshot 2025-07-04 231558](https://github.com/user-attachments/assets/e32b1791-efb8-4b6a-8f22-aeb92054bdd9)
+Endpoint ini digunakan untuk menampilkan informasi detail dari satu villa berdasarkan ID-nya. Permintaan dilakukan menggunakan method GET, dengan parameter ID yang disisipkan langsung pada URL. Pada contoh tangkapan layar di atas, ID villa yang diambil adalah 1, dan server merespons dengan status 200 OK, menampilkan data lengkap villa berupa id, name, descripton, dan address dalam format JSON.
+
+- `GET /villas/{id}/rooms` → Menampilkan kamar villa berdasarkan id villa
+![Screenshot 2025-07-04 231624](https://github.com/user-attachments/assets/6ba920eb-88fa-4277-8724-d3fcfe25144e)
+Endpoint ini digunakan untuk menampilkan informasi detail dari kamar yang terdapat pada satu villa berdasarkan ID-nya. Permintaan dilakukan menggunakan method GET, dengan parameter ID yang disisipkan langsung pada URL. Pada contoh tangkapan layar di atas, ID villa yang diambil adalah 1, dan server merespons dengan status 200 OK, menampilkan data lengkap dari kamar yang terdapat pada villa tersebut.
+
+- `GET /villas/{id}/bookings` → Menampilkan kamar villa berdasarkan data booking
+![Screenshot 2025-07-04 231940](https://github.com/user-attachments/assets/f8bacf7a-706d-423e-90cc-c2f44d0876eb)
+Endpoint ini digunakan untuk menampilkan informasi yang mendetail dari booking yang telah dilakukan pada suatu villa berdasarkan ID-nya. Permintaan dilakukan menggunakan method GET, dengan parameter ID yang disisipkan langsung pada URL. Pada contoh tangkapan layar di atas, ID villa yang diambil adalah 1, dan server merespons dengan status 200 OK, menampilkan data lengkap dari booking yang telah terjadi di villa tersebut, seperti ID pelanggan, tanggal check-in dan check-out, dll.
+
+- `GET /villas/{id}/reviews` → Menampilkan kamar villa berdasarkan data review yang dilakukan oleh pelanggan
+![Screenshot 2025-07-04 232225](https://github.com/user-attachments/assets/fd69851b-9959-421c-a9b2-c318daa3206f)
+Endpoint ini digunakan untuk menampilkan informasi yang mendetail dari review yang telah dilakukan oleh pelanggan yang sudah melakukan booking pada suatu villa berdasarkan ID-nya. Permintaan dilakukan menggunakan method GET, dengan parameter ID yang disisipkan langsung pada URL. Pada contoh tangkapan layar di atas, ID villa yang diambil adalah 1, dan server merespons dengan status 200 OK, menampilkan data dari booking yang telah terjadi di villa tersebut, seperti ID review, ratingnya, dan isi dari reviewnya tersebut.
+
+- `GET /villas?ci_date={checkin_date}&co_date={checkout_date} ` → Pencarian ketersediaan vila berdasarkan tanggal check-in dan checkout
+![Screenshot 2025-07-04 232327](https://github.com/user-attachments/assets/35fcec49-ba30-480b-9926-18430d84a2d9)
+Endpoint ini digunakan untuk menampilkan informasi dari ketersediaan vila berdasarkan tanggal check-in dan check-out yang telah dilakukan oleh pelanggan yang sudah melakukan booking. Permintaan dilakukan menggunakan method GET, dengan parameter date dari check-in dan check-out yang disisipkan langsung pada URL. Pada contoh tangkapan layar di atas, date yang digunakan dan hasil yang sudah tertera.
+
+- `POST /villas ` → Menambahkan data vila
+![Screenshot 2025-07-04 231300](https://github.com/user-attachments/assets/4dbbc6bf-3839-47e4-b9aa-d6072a775311)
+Endpoint ini digunakan untuk menambahkan data vila yang ingin di tambahkan pada database.
+
+- `POST /villas/{id}/rooms ` → Menambahkan tipe kamar pada vila
+![Screenshot 2025-07-04 231456](https://github.com/user-attachments/assets/7b2f7c39-1b90-4b94-96c7-788cda78fb38)
+Endpoint ini digunakan untuk menambahkan data kamar dari vila yang sudah ada pada database.
+
+- `PUT /villas/{id} ` → Mengubah data suatu vila
+![Screenshot 2025-07-04 232516](https://github.com/user-attachments/assets/4cd5ae86-82ea-4628-8fb5-8e63efa437ba)
+Endpoint ini digunakan untuk mengubah data dari vila yang sudah ada pada database. Endpoint ini dapat digunakan bila kita ingin melakukan update data semisalnya serperti nama pada vila yang sudah ada, alamat maupun deskripsi.
+
+- `PUT /villas/{id}/rooms/{id}  ` → Mengubah informasi kamar suatu vila
+![Screenshot 2025-07-04 232627](https://github.com/user-attachments/assets/7629d6f1-c162-4274-9078-9ef4791b4f04)
+Endpoint ini digunakan untuk mengubah data kamar dari vila yang sudah ada pada database. Endpoint ini dapat digunakan bila kita ingin melakukan update data semisalnya serperti status dari beberapa service yang terdapat pada kamar pada vila yang sudah ada, bed size maupun harga.
+
+- `DELETE /villas/{id}/rooms/{id}   ` → Menghapus kamar suatu vila
+![Screenshot 2025-07-04 232659](https://github.com/user-attachments/assets/8fca15fa-ada0-42ed-a698-2f7c136db841)
+Endpoint ini digunakan untuk menghapus data kamar yang terdapat pada vila yang sudah ada pada database.
+
+- `DELETE /villas/{id}   ` → Menghapus data suatu vila
+![Screenshot 2025-07-04 232727](https://github.com/user-attachments/assets/c656e239-3772-4b0f-bb91-84700c9f9c5b)
+Endpoint ini digunakan untuk menghapus data dari vila yang sudah ada pada database sebelumnya.
+
 ## `Endpoint : /customers`
 # `GET`
    - `GET /customers` → Menampilkan semua pelanggan
