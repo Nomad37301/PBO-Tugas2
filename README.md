@@ -100,7 +100,7 @@ Response:
 - **SQLite JDBC**: Untuk koneksi database SQLite.O
 
 ## 💾 Struktur Database Ringkas
-![Uploading Erd.png…]()
+![Erd](https://github.com/user-attachments/assets/a6ff4652-8f8f-488a-9019-783b12825625)
 - Customers (id, name, email)
 - Bookings (id, customer_id, room_type_id, checkin_date, checkout_date)
 - Reviews (id, customer_id, rating, comment)
