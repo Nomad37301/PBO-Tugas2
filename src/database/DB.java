@@ -71,7 +71,6 @@ public class DB {
 
             stmt.execute("CREATE TABLE IF NOT EXISTS reviews (" +
                     "booking INTEGER PRIMARY KEY," +
-                    "villa_id INTEGER," +
                     "star INTEGER NOT NULL," +
                     "title TEXT NOT NULL," +
                     "content TEXT NOT NULL" +
