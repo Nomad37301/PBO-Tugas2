@@ -353,44 +353,43 @@ public class VillaController {
     }
 
     public static void checkAvailability(Request req, Response res) {
-        String path = req.getPath();
-        String ciDate = JsonUtil.getQueryParam(path, "ci_date");
-        String coDate = JsonUtil.getQueryParam(path, "co_date");
+        String ci_date = JsonUtil.getQueryParam(req.getPath(), "ci_date");
+        String co_date = JsonUtil.getQueryParam(req.getPath(), "co_date");
 
-        if (ciDate == null || coDate == null) {
-            throw new BadRequestException("Parameter check-in dan check-out wajib diisi.");
+        if (ci_date == null || co_date == null) {
+            throw new BadRequestException("Tanggal check-in dan check-out wajib diisi.");
         }
 
-        List<Villa> available = new ArrayList<>();
+        try (Connection conn = DB.getConnection()) {
+            String sql = """
+            SELECT DISTINCT v.*
+            FROM villas v
+            JOIN room_types r ON r.villa = v.id
+            WHERE r.id NOT IN (
+                SELECT room_type FROM bookings
+                WHERE NOT (checkout_date <= ? OR checkin_date >= ?)
+            )
+        """;
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, ci_date);
+                stmt.setString(2, co_date);
+                ResultSet rs = stmt.executeQuery();
 
-        try (Connection conn = DB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("""
-             SELECT * FROM villas
-             WHERE id NOT IN (
-                 SELECT villa_id FROM bookings
-                 WHERE NOT (
-                     check_out_date <= ? OR check_in_date >= ?
-                 )
-             )
-         """)) {
+                List<Villa> villas = new ArrayList<>();
+                while (rs.next()) {
+                    Villa villa = new Villa(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            rs.getString("address")
+                    );
+                    villas.add(villa);
+                }
 
-            stmt.setString(1, ciDate);
-            stmt.setString(2, coDate);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Villa v = new Villa(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("address")
-                );
-                available.add(v);
+                res.setStatus(200);
+                res.setBody(JsonUtil.toJson(villas));
+                res.send();
             }
-
-            res.setStatus(200);
-            res.setBody(JsonUtil.toJson(available));
-            res.send();
 
         } catch (Exception e) {
             throw new ApiException(500, "Database error: " + e.getMessage());
